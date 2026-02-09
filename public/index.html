@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PawConnect - Un hogar para cada patita</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root { --primary: #7c4dff; --secondary: #00d2ff; --success: #00c853; --danger: #ff5252; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Quicksand', sans-serif; background: #fdfbfb; color: #444; }
+        
+        header {
+            background: linear-gradient(rgba(124, 77, 255, 0.8), rgba(118, 75, 162, 0.8)), 
+                        url('https://images.unsplash.com/photo-1450778869180-41d0601e046e?auto=format&fit=crop&w=1500&q=80');
+            background-size: cover; background-position: center; color: white;
+            padding: 60px 20px; border-bottom-left-radius: 50px; border-bottom-right-radius: 50px;
+            text-align: center; margin-bottom: 40px;
+        }
+
+        header h1 { font-size: 3em; margin-bottom: 10px; }
+        header p { font-size: 1.2em; opacity: 0.9; }
+
+        .container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+
+        .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-top: -80px; margin-bottom: 40px; }
+        .stat-card { background: white; padding: 25px; border-radius: 20px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+        .stat-card i { font-size: 2em; color: var(--primary); margin-bottom: 10px; }
+        .stat-card h2 { font-size: 2.5em; color: #333; }
+
+        .tabs { display: flex; justify-content: center; gap: 15px; margin-bottom: 30px; }
+        .tab-btn { padding: 12px 25px; border-radius: 25px; border: none; cursor: pointer; background: white; font-weight: bold; transition: 0.3s; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .tab-btn.active { background: var(--primary); color: white; }
+
+        .tab-content { display: none; animation: fadeIn 0.4s; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .form-container { background: white; padding: 30px; border-radius: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); margin-bottom: 40px; border: 1px solid #eee; }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
+        .form-group { display: flex; flex-direction: column; margin-bottom: 15px; }
+        .form-group label { font-size: 0.9em; font-weight: bold; margin-bottom: 8px; color: #666; }
+        .form-group input, .form-group select { padding: 12px; border: 2px solid #f0f0f0; border-radius: 12px; outline: none; transition: 0.3s; }
+        .form-group input:focus { border-color: var(--primary); }
+        
+        .btn-main { background: var(--primary); color: white; border: none; padding: 15px 40px; border-radius: 30px; cursor: pointer; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; margin-top: 10px; }
+        .btn-main:hover { transform: scale(1.05); box-shadow: 0 5px 15px rgba(124, 77, 255, 0.3); }
+
+        .cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 25px; }
+        .card { background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.05); transition: 0.3s; border: 1px solid #f0f0f0; }
+        .card:hover { transform: translateY(-5px); }
+        .card-header { background: #f8f9fa; padding: 15px 20px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
+        .card-body { padding: 20px; }
+        
+        .badge { display: inline-block; padding: 5px 15px; border-radius: 20px; font-size: 0.8em; font-weight: bold; margin-top: 10px; }
+        .badge-true { background: #e8f5e9; color: #2e7d32; }
+        .badge-false { background: #fff3e0; color: #ef6c00; }
+        
+        .message { position: fixed; bottom: 20px; right: 20px; padding: 15px 30px; border-radius: 50px; color: white; display: none; z-index: 1000; box-shadow: 0 5px 20px rgba(0,0,0,0.2); font-weight: bold; }
+        
+        .empty-state { text-align: center; padding: 40px; color: #bbb; grid-column: 1 / -1; }
+        .empty-state i { font-size: 3em; margin-bottom: 10px; display: block; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="container">
+            <h1><i class="fas fa-paw"></i> PawConnect</h1>
+            <p>Donde las historias de amor empiezan con cuatro patas</p>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="stats">
+            <div class="stat-card"><i class="fas fa-dog"></i> <h2 id="totalAnimales">0</h2><p>Amigos esperando</p></div>
+            <div class="stat-card"><i class="fas fa-users"></i> <h2 id="totalUsuarios">0</h2><p>Héroes registrados</p></div>
+            <div class="stat-card"><i class="fas fa-heart"></i> <h2 id="totalAdopciones">0</h2><p>Finales felices</p></div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="openTab('animales')"><i class="fas fa-cat"></i> Nuestros Animales</button>
+            <button class="tab-btn" onclick="openTab('usuarios')"><i class="fas fa-user-friends"></i> Comunidad</button>
+            <button class="tab-btn" onclick="openTab('adopciones')"><i class="fas fa-home"></i> Adopciones</button>
+        </div>
+
+        <div id="animales" class="tab-content active">
+            <div class="form-container">
+                <h3><i class="fas fa-plus-circle"></i> Dar la bienvenida a un nuevo amigo</h3><br>
+                <form onsubmit="crearDato(event, '/animales', cargarAnimales)">
+                    <div class="form-grid">
+                        <div class="form-group"><label>¿Cómo se llama?</label><input type="text" name="nombre" placeholder="Ej: Boby" required></div>
+                        <div class="form-group">
+                            <label>¿Qué especie es?</label>
+                            <select name="especie" required>
+                                <option value="perro">Perro</option>
+                                <option value="gato">Gato</option>
+                                <option value="otro">Otro</option>
+                            </select>
+                        </div>
+                        <div class="form-group"><label>Peso aproximado (kg)</label><input type="number" name="peso" step="0.1" placeholder="0.0" required></div>
+                    </div>
+                    <button type="submit" class="btn-main">Registrar Amiguito</button>
+                </form>
+            </div>
+            <div id="listaAnimales" class="cards-grid"></div>
+        </div>
+
+        <div id="usuarios" class="tab-content">
+            <div class="form-container">
+                <h3><i class="fas fa-user-plus"></i> Registrar a un nuevo adoptante</h3><br>
+                <form onsubmit="crearDato(event, '/usuarios', cargarUsuarios)">
+                    <div class="form-grid">
+                        <div class="form-group"><label>Nombre de usuario</label><input type="text" name="username" placeholder="Nombre completo" required></div>
+                        <div class="form-group"><label>Puntos de bienvenida</label><input type="number" name="puntosFidelidad" value="10"></div>
+                        <div class="form-group">
+                            <label>¿Es socio del refugio?</label>
+                            <select name="esSocio"><option value="true">Sí, es socio</option><option value="false">Todavía no</option></select>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-main">Dar de alta héroe</button>
+                </form>
+            </div>
+            <div id="listaUsuarios" class="cards-grid"></div>
+        </div>
+
+        <div id="adopciones" class="tab-content">
+            <div class="form-container">
+                <h3><i class="fas fa-hand-holding-heart"></i> Formalizar una nueva adopción</h3><br>
+                <form onsubmit="crearDato(event, '/adopciones', cargarAdopciones)">
+                    <div class="form-grid">
+                        <div class="form-group"><label>Elige al amiguito</label><select id="selectAnimal" name="animalId" required></select></div>
+                        <div class="form-group"><label>Elige al adoptante</label><select id="selectUser" name="userId" required></select></div>
+                    </div>
+                    <button type="submit" class="btn-main">¡Unir para siempre!</button>
+                </form>
+            </div>
+            <div id="listaAdopciones" class="cards-grid"></div>
+        </div>
+    </div>
+
+    <div id="msg" class="message"></div>
+    <footer style="margin-top: 60px; padding: 40px 20px; background: white; border-top-left-radius: 50px; border-top-right-radius: 50px; text-align: center; box-shadow: 0 -10px 30px rgba(0,0,0,0.05);">
+        <div class="container">
+            <div style="font-size: 1.5em; color: var(--primary); margin-bottom: 15px; font-weight: bold;">
+                <i class="fas fa-paw"></i> PawConnect
+            </div>
+            <p style="color: #888; margin-bottom: 20px; font-style: italic;">
+                "Adoptar es un acto de amor que cambia dos vidas para siempre."
+            </p>
+            <div style="display: flex; justify-content: center; gap: 20px; margin-bottom: 20px;">
+                <a href="#" style="color: #667eea; font-size: 1.2em;"><i class="fab fa-instagram"></i></a>
+                <a href="#" style="color: #667eea; font-size: 1.2em;"><i class="fab fa-facebook"></i></a>
+                <a href="#" style="color: #667eea; font-size: 1.2em;"><i class="fab fa-twitter"></i></a>
+            </div>
+            <div style="font-size: 0.8em; color: #bbb; border-top: 1px solid #eee; pt: 20px; padding-top: 20px;">
+                &copy; 2026 PawConnect - Proyecto de Integración de Bases de Datos MongoDB
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        
+        function openTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(tabName).classList.add('active');
+            event.currentTarget.classList.add('active');
+            if(tabName === 'adopciones') actualizarSelects();
+        }
+
+        async function crearDato(e, ruta, callback) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData.entries());
+            
+            try {
+                const res = await fetch(ruta, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(data)
+                });
+                if(res.ok) {
+                    notify("¡Acción realizada con éxito!", "var(--success)");
+                    e.target.reset();
+                    callback();
+                    actualizarStats();
+                } else {
+                    const err = await res.text();
+                    notify(err, "var(--danger)");
+                }
+            } catch (error) { notify("Error de conexión", "var(--danger)"); }
+        }
+
+        async function cargarAnimales() {
+            try {
+                const res = await fetch('/animales');
+                const data = await res.json();
+                const cont = document.getElementById('listaAnimales');
+
+                if(data.length === 0) { 
+                    cont.innerHTML = '<div class="empty-state"><i class="fas fa-bone"></i><p>Aún no hay peluditos esperando.</p></div>'; 
+                    return; 
+                }
+
+                cont.innerHTML = data.map(a => {
+                    let fotoHTML;
+
+                    if (a.especie === 'perro') {
+                        const dogId = parseInt(a._id.slice(-3), 16) % 100; 
+                        const fotoUrl = `https://placedog.net/400/300?id=${dogId}`;
+                        fotoHTML = `<img src="${fotoUrl}" alt="${a.nombre}" style="width: 100%; height: 100%; object-fit: cover;">`;
+                    } else if (a.especie === 'gato') {
+                        const fotoUrl = `https://cataas.com/cat?unique=${a._id}`;
+                        fotoHTML = `<img src="${fotoUrl}" alt="${a.nombre}" style="width: 100%; height: 100%; object-fit: cover;">`;
+                    } else {
+                        fotoHTML = `
+                            <div style="width: 100%; height: 100%; background: #f0f0f0; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #bbb;">
+                                <i class="fas fa-paw" style="font-size: 3em; margin-bottom: 10px;"></i>
+                                <span style="font-size: 0.8em; font-weight: bold; text-transform: uppercase;">Sin foto</span>
+                            </div>`;
+                    }
+
+                    return `
+                        <div class="card">
+                            <div style="width: 100%; height: 180px; overflow: hidden; background: #eee;">
+                                ${fotoHTML}
+                            </div>
+                            <div class="card-header">
+                                <h4>${a.nombre}</h4>
+                                <i class="fas fa-${a.especie === 'perro' ? 'dog' : (a.especie === 'gato' ? 'cat' : 'paw')}"></i>
+                            </div>
+                            <div class="card-body">
+                                <p><i class="fas fa-weight-hanging"></i> Peso: ${a.peso}kg</p>
+                                <span class="badge badge-${a.disponible}">${a.disponible ? 'Disponible' : 'Ya adoptado'}</span>
+                                <button onclick="eliminar('/animales/${a._id}', cargarAnimales)" style="float:right; border:none; background:none; color:var(--danger); cursor:pointer">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </div>
+                        </div>`;
+                }).join('');
+            } catch (error) {
+                console.error("Error al cargar animales:", error);
+            }
+        }
+
+        async function cargarUsuarios() {
+            const res = await fetch('/usuarios');
+            const data = await res.json();
+            const cont = document.getElementById('listaUsuarios');
+            if(data.length === 0) { cont.innerHTML = '<div class="empty-state"><i class="fas fa-user-slash"></i><p>Nuestra comunidad está creciendo.</p></div>'; return; }
+            cont.innerHTML = data.map(u => `
+                <div class="card">
+                    <div class="card-header"><h4>${u.username}</h4><i class="fas fa-user"></i></div>
+                    <div class="card-body">
+                        <p>Puntos: ${u.puntosFidelidad}</p>
+                        <p>Socio: ${u.esSocio ? 'Sí' : 'No'}</p>
+                        <button onclick="eliminar('/usuarios/${u._id}', cargarUsuarios)" style="float:right; border:none; background:none; color:var(--danger); cursor:pointer"><i class="fas fa-trash-alt"></i></button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function cargarAdopciones() {
+            const res = await fetch('/adopciones');
+            const data = await res.json();
+            const cont = document.getElementById('listaAdopciones');
+            if(data.length === 0) { cont.innerHTML = '<div class="empty-state"><i class="fas fa-heart-broken"></i><p>Aún no hay historias de éxito.</p></div>'; return; }
+            cont.innerHTML = data.map(ad => `
+                <div class="card" style="border-left: 5px solid var(--success)">
+                    <div class="card-body">
+                        <h4>¡Final feliz!</h4>
+                        <p><b>${ad.animalId?.nombre || 'Alguien'}</b> ya está con <b>${ad.userId?.username || 'su familia'}</b></p>
+                        <small><i class="far fa-calendar-alt"></i> ${new Date(ad.fecha).toLocaleDateString()}</small>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function eliminar(ruta, callback) {
+            if(confirm("¿Estás seguro de que quieres borrar este registro?")) {
+                await fetch(ruta, { method: 'DELETE' });
+                callback();
+                actualizarStats();
+            }
+        }
+
+        async function actualizarSelects() {
+            const [resA, resU] = await Promise.all([fetch('/animales'), fetch('/usuarios')]);
+            const animales = await resA.json();
+            const usuarios = await resU.json();
+            document.getElementById('selectAnimal').innerHTML = animales.filter(a => a.disponible).map(a => `<option value="${a._id}">${a.nombre}</option>`).join('') || '<option disabled>No hay amiguitos libres</option>';
+            document.getElementById('selectUser').innerHTML = usuarios.map(u => `<option value="${u._id}">${u.username}</option>`).join('') || '<option disabled>No hay adoptantes</option>';
+        }
+
+        async function actualizarStats() {
+            const [a, u, ad] = await Promise.all([fetch('/animales'), fetch('/usuarios'), fetch('/adopciones')]);
+            document.getElementById('totalAnimales').innerText = (await a.json()).length;
+            document.getElementById('totalUsuarios').innerText = (await u.json()).length;
+            document.getElementById('totalAdopciones').innerText = (await ad.json()).length;
+        }
+
+        function notify(text, color) {
+            const m = document.getElementById('msg');
+            m.innerText = text; m.style.background = color; m.style.display = 'block';
+            setTimeout(() => m.style.display = 'none', 3000);
+        }
+
+        cargarAnimales(); cargarUsuarios(); cargarAdopciones(); actualizarStats();
+    </script>
+</body>
+</html>
