@@ -6,6 +6,10 @@ const animalSchema = new mongoose.Schema({
         required: [true, 'Debes ponerle un nombre al animal'],
         maxlength: [15, 'El nombre es demasiado largo (máximo 15)']
     },
+    fechaNacimiento: { 
+        type: Date, 
+        required: [true, 'La fecha de nacimiento es obligatoria'] 
+    },
     especie: {
         type: String,
         required: [true, 'La especie es obligatoria'],

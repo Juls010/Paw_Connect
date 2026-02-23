@@ -89,7 +89,10 @@
                 <h3><i class="fas fa-plus-circle"></i> Dar la bienvenida a un nuevo amigo</h3><br>
                 <form onsubmit="crearDato(event, '/animales', cargarAnimales)">
                     <div class="form-grid">
-                        <div class="form-group"><label>¿Cómo se llama?</label><input type="text" name="nombre" placeholder="Ej: Boby" required></div>
+                        <div class="form-group">
+                            <label>¿Cómo se llama?</label>
+                            <input type="text" name="nombre" placeholder="Ej: Boby" required>
+                        </div>
                         <div class="form-group">
                             <label>¿Qué especie es?</label>
                             <select name="especie" required>
@@ -98,7 +101,14 @@
                                 <option value="otro">Otro</option>
                             </select>
                         </div>
-                        <div class="form-group"><label>Peso aproximado (kg)</label><input type="number" name="peso" step="0.1" placeholder="0.0" required></div>
+                        <div class="form-group">
+                            <label>Peso aproximado (kg)</label>
+                            <input type="number" name="peso" step="0.1" placeholder="0.0" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Fecha de nacimiento</label>
+                            <input type="date" name="fechaNacimiento" required>
+                        </div>
                     </div>
                     <button type="submit" class="btn-main">Registrar Amiguito</button>
                 </form>
@@ -232,6 +242,7 @@
                             </div>
                             <div class="card-body">
                                 <p><i class="fas fa-weight-hanging"></i> Peso: ${a.peso}kg</p>
+                                <p><i class="fa-solid fa-calendar"></i> Edad: ${a.fechaNacimiento}</p>
                                 <span class="badge badge-${a.disponible}">${a.disponible ? 'Disponible' : 'Ya adoptado'}</span>
                                 <button onclick="eliminar('/animales/${a._id}', cargarAnimales)" style="float:right; border:none; background:none; color:var(--danger); cursor:pointer">
                                     <i class="fas fa-trash-alt"></i>
