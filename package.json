@@ -4,15 +4,21 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "mocha test/*.test.js"
+    "test": "mocha test/*.test.js",
+    "start": "node index.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "bcrypt": "^6.0.0",
+    "bcryptjs": "^3.0.3",
     "chai": "^6.2.2",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
     "express": "^5.2.1",
-    "mocha": "^11.7.5",
+    "jsonwebtoken": "^9.0.3",
+    "mocha": "^11.3.0",
     "mongoose": "^9.1.6",
     "mongose": "^0.0.2-security",
     "sinon": "^21.0.1",
