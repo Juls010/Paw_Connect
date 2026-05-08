@@ -25,4 +25,6 @@ jobs:
         run: npm test
         env: 
           MONGO_URL: ruta
-
+      - name: Desplegar a Render
+        if: success()
+        run: curl -f  ${{ secrets.URL_RENDER_HOOK }}
