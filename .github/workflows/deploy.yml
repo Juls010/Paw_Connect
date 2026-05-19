@@ -31,6 +31,8 @@ jobs:
           MONGO_URL: mongodb://localhost:27017/paw_connect
           JWT_SECRET: test_secret
           JWT_REFRESH_SECRET: test_refresh_secret
+          ACCESS_TOKEN_EXPIRY: 15m
+          REFRESH_TOKEN_EXPIRY: 7d
           
       - name: Disparar despliegue en Render
         if: success()
