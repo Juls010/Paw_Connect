@@ -1,6 +1,8 @@
+require('dotenv').config();
 const express = require('express');
 const app = express();
 const cors = require('cors');
+const morgan = require('morgan');
 const Animal = require('./models/Animal');
 const User = require('./models/User');
 const Adoption = require('./models/Adoption');
@@ -10,6 +12,23 @@ const { authenticate, hasRole } = require('./middleware/auth');
 
 app.use(express.json());
 app.use(cors());
+
+const logFormat = process.env.NODE_ENV === 'prod' ? 'combined' : 'dev';
+app.use(morgan(logFormat));
+
+app.get('/health', async (req, res) => {
+    try {
+        await Animal.findOne();
+        res.status(200).json({ 
+            status: 'ok',
+            uptime: process.uptime(),
+            timestamp: Date.now() 
+        });
+    } catch {
+        res.sendStatus(503);
+    }    
+});
+
 app.get('/test', (req, res) => {
     res.send("El servidor está vivo");
 });

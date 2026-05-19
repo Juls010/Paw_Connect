@@ -9,6 +9,15 @@ servers:
     description: Servidor de desarrollo local
 
 paths:
+  /health:
+    get:
+      summary: Comprobación de salud de la API y Base de Datos
+      responses:
+        '200':
+          description: Todo funciona correctamente
+        '503':
+          description: Error de conexión con la base de datos o servicio no disponible
+
   /animales:
     get:
       summary: Listar todos los animales

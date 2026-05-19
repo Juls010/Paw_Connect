@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha test/*.test.js",
+    "test:coverage": "nyc mocha test/*.test.js",
     "start": "node index.js"
   },
   "keywords": [],
@@ -21,6 +22,8 @@
     "mocha": "^11.3.0",
     "mongoose": "^9.1.6",
     "mongose": "^0.0.2-security",
+    "morgan": "^1.10.1",
+    "nyc": "^18.0.0",
     "sinon": "^21.0.1",
     "supertest": "^7.2.2"
   }
