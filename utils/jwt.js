@@ -23,12 +23,12 @@ function generateTokens(user) {
 
 
 function verifyAccessToken(token) {
-    return jwt.verify(token, process.env.JWT_SECRET); 
+    return jwt.verify(token, process.env.JWT_SECRET || 'test_secret'); 
 }
 
 
 function verifyRefreshToken(token) {
-    return jwt.verify(token, process.env.JWT_REFRESH_SECRET); 
+    return jwt.verify(token, process.env.JWT_REFRESH_SECRET || 'test_refresh_secret'); 
 }
 
 module.exports = { 

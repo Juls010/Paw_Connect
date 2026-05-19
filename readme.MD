@@ -42,6 +42,26 @@ El proyecto incluye el archivo openapi.yaml que describe la estructura de los mo
 🔗 **[Ver colección en Postman](https://documenter.getpostman.com/view/48709273/2sBXcAHMzF)**
 
 ---
+
+## Despliegue y CI/CD (GitHub Actions + Render)
+
+Se ha implementado un pipeline completo de Integración y Despliegue Continuo (CI/CD) cumpliendo con los requisitos de la actividad:
+
+1. **GitHub Actions**: Se ha creado el flujo `.github/workflows/deploy.yml` que se ejecuta en cada push a la rama `main`. Este flujo levanta un contenedor de MongoDB local, instala dependencias y ejecuta la suite de pruebas.
+2. **Cobertura de Pruebas (Paso extra)**: En lugar de ejecutar simplemente los tests, el pipeline calcula la cobertura de código usando `nyc` mediante el comando `npm run test:coverage`.
+3. **Despliegue automático (Deploy Hook)**: Si todos los tests pasan correctamente, el workflow de GitHub hace una petición mediante `curl` al Webhook secreto de Render para disparar el despliegue automático en el servidor de producción.
+4. **Ruta de Comprobación de Salud**: Se ha creado la ruta `/health`, que verifica si la API está viva y realiza una consulta (`Animal.findOne()`) a MongoDB Atlas para comprobar la conexión. Devuelve estado `200 OK` si es exitosa o `503 Service Unavailable` en caso contrario.
+5. **Logs de Servidor**: Se ha integrado el middleware `morgan` en `app.js` para registrar todas las peticiones HTTP que recibe el servidor, utilizando diferentes niveles de detalle según el entorno.
+
+### Evidencias de Despliegue
+
+**Comprobación de Salud (/health) funcionando en producción:**  
+![Captura del estado Health en Render](https://res.cloudinary.com/dc4u0bzgh/image/upload/v1779181556/b3f5b220-e28f-4303-87e6-415fbd798e78.png)
+
+**Registro de Peticiones HTTP (Logs de Morgan en Render):**  
+![Captura de los logs de Morgan en Render](https://res.cloudinary.com/dc4u0bzgh/image/upload/v1779181606/a6c74436-b892-4114-b22b-c5ec7b2e430b.png)
+
+---
 Proyecto de Integración de Bases de Datos MongoDB
 
 Julia N.G 💕

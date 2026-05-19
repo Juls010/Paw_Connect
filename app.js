@@ -24,9 +24,19 @@ app.get('/health', async (req, res) => {
             uptime: process.uptime(),
             timestamp: Date.now() 
         });
-    } catch {
-        res.sendStatus(503);
+    } catch (error) {
+        res.status(503).json({ error: error.message });
     }    
+});
+
+const mongoose = require('mongoose');
+app.get('/debug', (req, res) => {
+    const states = {0: 'disconnected', 1: 'connected', 2: 'connecting', 3: 'disconnecting'};
+    res.json({
+        readyState: states[mongoose.connection.readyState] || mongoose.connection.readyState,
+        hasMongoUri: !!process.env.MONGO_URI,
+        uriPreview: process.env.MONGO_URI ? process.env.MONGO_URI.substring(0, 14) + '...' : 'none'
+    });
 });
 
 app.get('/test', (req, res) => {
